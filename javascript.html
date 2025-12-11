@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ice Candy Order Form</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+    h2 {
+      color: #008080;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      box-sizing: border-box;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+    }
+    .button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #008080;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    .button:hover {
+      background-color: #006666;
+    }
+    #total {
+      font-size: 18px;
+      font-weight: bold;
+      margin-top: 15px;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Ice Candy Order Form</h2>
+
+  <form id="orderForm" action="submit_order.php" method="post"> <!-- Replace with your backend script -->
+
+    <label for="name">Full Name</label>
+    <input type="text" id="name" name="name" required>
+
+    <label for="phone">Contact Number</label>
+    <input type="tel" id="phone" name="phone" required>
+
+    <label for="address">Delivery Address</label>
+    <textarea id="address" name="address" rows="3"></textarea>
+
+    <label for="date">Date of Order</label>
+    <input type="date" id="date" name="date" required>
+
+    <h3>Ice Candy Flavors</h3>
+    <table>
+      <tr>
+        <th>Flavor</th>
+        <th>Price</th>
+        <th>Quantity</th>
+      </tr>
+      <tr>
+        <td>Mango</td>
+        <td>$0.50</td>
+        <td><input type="number" name="mango_qty" min="0" value="0" class="qty"></td>
+      </tr>
+      <tr>
+        <td>Chocolate</td>
+        <td>$0.50</td>
+        <td><input type="number" name="chocolate_qty" min="0" value="0" class="qty"></td>
+      </tr>
+      <tr>
+        <td>Buko Pandan</td>
+        <td>$0.50</td>
+        <td><input type="number" name="buko_qty" min="0" value="0" class="qty"></td>
+      </tr>
+      <tr>
+        <td>Melon</td>
+        <td>$0.50</td>
+        <td><input type="number" name="melon_qty" min="0" value="0" class="qty"></td>
+      </tr>
+      <tr>
+        <td>Ube</td>
+        <td>$0.50</td>
+        <td><input type="number" name="ube_qty" min="0" value="0" class="qty"></td>
+      </tr>
+    </table>
+
+    <div id="total">Total: $0.00</div>
+
+    <label for="payment">Payment Method</label>
+    <select id="payment" name="payment">
+      <option value="cash">Cash on Delivery</option>
+      <option value="gcash">GCash</option>
+      <option value="bank">Bank Transfer</option>
+    </select>
+
+    <label for="delivery">Delivery or Pickup</label>
+    <select id="delivery" name="delivery">
+      <option value="pickup">Pickup</option>
+      <option value="delivery">Delivery</option>
+    </select>
+
+    <label for="notes">Additional Notes</label>
+    <textarea id="notes" name="notes" rows="3" placeholder="e.g. Leave at the gate, allergic to peanuts, etc."></textarea>
+
+    <button type="submit" class="button">Submit Order</button>
+  </form>
+
+  <script>
+    // Function to calculate and update total price
+    function updateTotal() {
+      const qtyInputs = document.querySelectorAll('.qty');
+      let total = 0;
+      qtyInputs.forEach(input => {
+        const qty = parseInt(input.value) || 0;
+        total += qty * 0.50;
+      });
+      document.getElementById('total').textContent = `Total: $${total.toFixed(2)}`;
+    }
+
+    // Add event listeners to quantity inputs for real-time total update
+    document.querySelectorAll('.qty').forEach(input => {
+      input.addEventListener('input', updateTotal);
+    });
+
+    // Form validation on submit
+    document.getElementById('orderForm').addEventListener('submit', function(event) {
+      const name = document.getElementById('name').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const address = document.getElementById('address').value.trim();
+      const date = document.getElementById('date').value;
+      const qtyInputs = document.querySelectorAll('.qty');
+      let totalQty = 0;
+      qtyInputs.forEach(input => {
+        totalQty += parseInt(input.value) || 0;
+      });
+
+      if (!name || !phone || !date) {
+        alert('Please fill in all required fields: Full Name, Contact Number, and Date of Order.');
+        event.preventDefault();
+        return;
+      }
+
+      if (totalQty === 0) {
+        alert('Please select at least one ice candy flavor.');
+        event.preventDefault();
+        return;
+      }
+
+      // Basic phone validation (adjust regex as needed)
+      const phoneRegex = /^\d{10,15}$/; // Example: 10-15 digits
+      if (!phoneRegex.test(phone)) {
+        alert('Please enter a valid contact number (10-15 digits).');
+        event.preventDefault();
+        return;
+      }
+
+      // If delivery is selected, address is required
+      const delivery = document.getElementById('delivery').value;
+      if (delivery === 'delivery' && !address) {
+        alert('Please provide a delivery address.');
+        event.preventDefault();
+        return;
+      }
+
+      // If all checks pass, allow submission
+    });
+
+    // Initialize total on page load
+    updateTotal();
+  </script>
+
+</body>
+</html>
